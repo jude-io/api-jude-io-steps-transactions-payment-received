@@ -1,0 +1,49 @@
+{
+  "name": "api-jude-io-steps-transactions-payment-received",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jude-io/api-jude-io-steps-transactions-payment-received.git"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.247.1",
+    "babel-cli": "^6.24.1",
+    "babel-core": "^6.26.0",
+    "babel-plugin-array-includes": "^2.0.3",
+    "babel-plugin-transform-es2015-destructuring": "^6.23.0",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
+    "babel-plugin-transform-es2017-object-entries": "0.0.4",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.7.0"
+  },
+  "dependencies": {
+    "moment": "^2.22.2",
+    "utils-common": "git+ssh://git@github.com/jude-io/utils-common.git#master"
+  },
+  "scripts": {
+    "build": "npm run build:init && npm run build:js && npm run build:install",
+    "build:init": "rm -rf dist && mkdir dist",
+    "build:js": "cd src && babel . -d ../dist",
+    "build:install": "cp package.json package-lock.json dist/ && cd dist && npm install --production",
+    "package": "npm run build && npm run package:pack",
+    "package:pack": "rm -f artifact.zip && cd dist/ && zip -r ../artifact.zip * -x package.json package-lock.json && cd ..",
+    "spec": "npm run spec:snapshot && npm run spec:functional",
+    "spec:snapshot": "jest spec/snapshot",
+    "spec:functional": "jest spec/functional",
+    "test": "npm run test:build && npm run test:run",
+    "test:build": "npm run test:build:init && npm run test:build:js && npm run test:build:install",
+    "test:build:init": "cd test && rm -rf dist && mkdir dist",
+    "test:build:js": "cd src && babel . -d ../test/dist",
+    "test:build:install": "cp package.json package-lock.json test/dist/ && cd test/dist && npm install --production",
+    "test:run": "jest test/",
+    "deploy": "npm run package && aws lambda update-function-code --function-name api-jude-io-steps-transactions-payment-received --zip-file fileb://artifact.zip"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jude-io/api-jude-io-steps-transactions-payment-received/issues"
+  },
+  "homepage": "https://github.com/jude-io/api-jude-io-steps-transactions-payment-received#readme"
+}
