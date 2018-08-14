@@ -30,7 +30,7 @@ exports.handler = async (event, context, callback) => {
         continue;
       }
 
-      // Slack us if this was a payment
+      // Slack us
       if (trans._jude.startsWith("payment_")) {
         const timeTaken = moment(result.lastUpdated).fromNow(true);
         const timeTakenTotal = moment(result.created).fromNow(true);
@@ -46,8 +46,23 @@ exports.handler = async (event, context, callback) => {
             }
           ]
         } });
-        Log("handler", "Sent a slack notification");
+      } else {
+        const timeTaken = moment(result.lastUpdated).fromNow(true);
+        const timeTakenTotal = moment(result.created).fromNow(true);
+        const slack = await notifySlack({ uri: process.env.SLACK_WEBHOOK, message: {
+          channel: "#transfers",
+          attachments: [
+            {
+              fallback: `Transfer received: ${trans._jude}`,
+              title: trans._jude,
+              text: `RECEIVED\nThis transfer took ${timeTaken} since it was last updated (when it was marked as` +
+                ` complete), and ${timeTakenTotal} since it was created.`,
+              color: "good"
+            }
+          ]
+        } });
       }
+      Log("handler", "Sent a slack notification");
 
       // If this is part of a trigger, and the trigger is awaiting a payment confirmation, set it back to active
       if (trans._trigger) {
