@@ -9,14 +9,16 @@ export async function markTransferAsReceived(id) {
       Key: {
         _id: id
       },
-      UpdateExpression: "SET #R = :r, #UPDATED = :updated",
+      UpdateExpression: "SET #R = :r, #UPDATED = :updated, #S = :s",
       ExpressionAttributeNames: {
         "#R": "received_at",
+        "#S": "status",
         "#UPDATED": "updated_at"
       },
       ExpressionAttributeValues: {
         ":updated": new Date().toISOString(),
-        ":r": new Date().toISOString()
+        ":r": new Date().toISOString(),
+        ":s": "COMPLETE"
       }
     };
     const transfer = await getTransferById(id);
