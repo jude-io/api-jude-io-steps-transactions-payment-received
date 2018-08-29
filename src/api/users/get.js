@@ -22,8 +22,8 @@ export async function getUserById(id) {
       avatar_url: item.avatar_url,
       created_at: item.created_at,
       updated_at: item.updated_at,
-      first_name: decrypt(item.first_name, process.env.KEY_USERS),
-      last_name: decrypt(item.last_name, process.env.KEY_USERS)
+      first_name: decrypt(item.first_name, "KEY_USERS"),
+      last_name: decrypt(item.last_name, "KEY_USERS")
     };
   } catch (error) {
     Log("fn.getUserById.error", error);
