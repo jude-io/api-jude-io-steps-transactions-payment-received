@@ -1,9 +1,13 @@
-import { Log, init, decrypt, notifySlack } from "utils-common";
+import { Log, init, decrypt, notifySlack, sendPushNotification } from "utils-common";
 import { markPaymentAsReceived } from "./api/payments/update";
 import { markTransferAsReceived } from "./api/transfers/update";
 import { getTriggerById } from "./api/triggers/get";
 import { setTriggerStatus } from "./api/triggers/update";
+import { getUserById } from "./api/users/get";
+import { getDeviceById } from "./api/devices/get";
+import { getAccount } from "./api/accounts/get";
 import moment from "moment";
+import numeral from "numeral";
 
 exports.handler = async (event, context, callback) => {
   console.log("E", JSON.stringify(event));
@@ -70,6 +74,26 @@ exports.handler = async (event, context, callback) => {
         if (trigger.status === "AWAITING_PAYMENT") {
           await setTriggerStatus(trans._user, trans._trigger, "ACTIVE");
           Log("handler", "reset trigger");
+        }
+      }
+
+      // Send a notification
+      if (trans.notify && result.payee) {
+        const user = await getUserById(result.payee);
+        const device = await getDeviceById(user._device);
+        if (device.push_token) {
+          let message;
+          if (trans._jude.startsWith("payment_")) {
+            const payer = getUserById(result.payer);
+            const to = getAccount(user._id, result.to);
+            message = `Payment of ${numeral(trans.amount).format("$0,000.00")} from ${payer.first_name} has arrived ` +
+              `in your ${to.name} account`;
+          } else {
+            const to = getAccount(user._id, result.to);
+            message = `Transfer of ${numeral(trans.amount).format("$0,000.00")} has arrived in your ` +
+              `${to.name} account`;
+          }
+          await sendPushNotification(user._id, device, null, message, trans._jude);
         }
       }
     }

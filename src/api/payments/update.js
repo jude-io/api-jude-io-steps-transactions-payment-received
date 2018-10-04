@@ -27,7 +27,14 @@ export async function markPaymentAsReceived(id, _trans) {
     if (payment && !payment.posted_at) {
       const result = await DDB.update(params).promise();
       Log("fn.markAsReceived.success", id);
-      return { alreadyMarked: false, lastUpdated: payment.updated_at, created: payment.created_at };
+      return {
+        alreadyMarked: false,
+        lastUpdated: payment.updated_at,
+        created: payment.created_at,
+        payee: payment._payee,
+        payer: payment._user,
+        to: payment._to
+      };
     }
     Log("fn.markAsReceived.info", "already marked");
     return { alreadyMarked: true };

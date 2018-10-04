@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "moment": "^2.22.2",
+    "numeral": "^2.0.6",
     "utils-common": "git+ssh://git@github.com/jude-io/utils-common.git#master"
   },
   "scripts": {
