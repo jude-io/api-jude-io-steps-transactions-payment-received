@@ -17,10 +17,10 @@ exports.handler = async (event, context, callback) => {
       let result;
       if (trans._jude.startsWith("transfer_")) {
         Log("handler", "transaction is a jude transfer");
-        result = await markTransferAsReceived(trans._jude);
+        result = await markTransferAsReceived(trans._jude, trans._id);
       } else if (trans._jude.startsWith("payment_")) {
         Log("handler", "transaction is a jude payment");
-        result = await markPaymentAsReceived(trans._jude);
+        result = await markPaymentAsReceived(trans._jude, trans._id);
       } else {
         Log("handler.warning", "unknown transaction._jude type", trans._jude);
       }
