@@ -24,7 +24,7 @@ export async function markTransferAsReceived(id, _trans) {
       }
     };
     const transfer = await getTransferById(id);
-    if (transfer && !transfer.posted_at) {
+    if (transfer && !transfer.received_at) {
       const result = await DDB.update(params).promise();
       Log("fn.markAsReceived.success", id);
       return {

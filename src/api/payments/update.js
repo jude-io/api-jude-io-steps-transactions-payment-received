@@ -24,7 +24,7 @@ export async function markPaymentAsReceived(id, _trans) {
       }
     };
     const payment = await getPaymentById(id);
-    if (payment && !payment.posted_at) {
+    if (payment && !payment.received_at) {
       const result = await DDB.update(params).promise();
       Log("fn.markAsReceived.success", id);
       return {
