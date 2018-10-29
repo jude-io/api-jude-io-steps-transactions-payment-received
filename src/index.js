@@ -1,4 +1,4 @@
-import { Log, init, decrypt, notifySlack, sendPushNotification } from "utils-common";
+import { Log, init, decrypt, notifySlack, sendPushNotification, sentrify } from "utils-common";
 import { markPaymentAsReceived } from "./api/payments/update";
 import { markTransferAsReceived } from "./api/transfers/update";
 import { getTriggerById } from "./api/triggers/get";
@@ -9,7 +9,7 @@ import { getAccount } from "./api/accounts/get";
 import moment from "moment";
 import numeral from "numeral";
 
-exports.handler = async (event, context, callback) => {
+exports.handler = sentrify(async (event, context, callback) => {
   console.log("E", JSON.stringify(event));
   try {
     await init(event, context);
@@ -103,4 +103,4 @@ exports.handler = async (event, context, callback) => {
     Log("fn.handler.error", error);
     return callback(error);
   }
-};
+});
