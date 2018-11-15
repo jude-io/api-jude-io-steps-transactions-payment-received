@@ -1,7 +1,7 @@
 import { Log, DDB } from "utils-common";
 import { getPaymentById } from "./get";
 
-export async function markPaymentAsReceived(id, _trans) {
+export async function markPaymentAsReceived(id, _trans, _user) {
   Log("fn.markAsReceived", id);
   try {
     const params = {
@@ -9,18 +9,18 @@ export async function markPaymentAsReceived(id, _trans) {
       Key: {
         _id: id
       },
-      UpdateExpression: "SET #R = :r, #UPDATED = :updated, #S = :s, #T = :t, #TL = list_append(if_not_exists(#TL, :empty), :tl)",
+      UpdateExpression: "SET #R = :r, #UPDATED = :updated, #S = :s, #T = list_append(if_not_exists(#T, :empty), :t), #TL = list_append(if_not_exists(#TL, :empty), :tl)",
       ExpressionAttributeNames: {
         "#R": "received_at",
         "#S": "status",
-        "#T": "_transaction",
+        "#T": "transactions",
         "#UPDATED": "updated_at",
         "#TL": "timeline"
       },
       ExpressionAttributeValues: {
         ":updated": new Date().toISOString(),
         ":r": new Date().toISOString(),
-        ":t": _trans,
+        ":t": { _trans, _user },
         ":s": "COMPLETE",
         ":tl": [ { status: "RECEIVED", time: new Date().toISOString() } ],
         ":empty": []
