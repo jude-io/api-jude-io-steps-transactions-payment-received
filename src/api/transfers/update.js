@@ -20,7 +20,7 @@ export async function markTransferAsReceived(id, _trans, _user) {
       ExpressionAttributeValues: {
         ":updated": new Date().toISOString(),
         ":r": new Date().toISOString(),
-        ":t": { _trans, _user },
+        ":t": [ { _trans, _user } ],
         ":s": "COMPLETE",
         ":tl": [ { status: "RECEIVED", time: new Date().toISOString() } ],
         ":empty": []
