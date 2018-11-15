@@ -9,18 +9,21 @@ export async function markPaymentAsReceived(id, _trans) {
       Key: {
         _id: id
       },
-      UpdateExpression: "SET #R = :r, #UPDATED = :updated, #S = :s, #T = :t",
+      UpdateExpression: "SET #R = :r, #UPDATED = :updated, #S = :s, #T = :t, #TL = list_append(if_not_exists(#TL, :empty), :tl)",
       ExpressionAttributeNames: {
         "#R": "received_at",
         "#S": "status",
         "#T": "_transaction",
-        "#UPDATED": "updated_at"
+        "#UPDATED": "updated_at",
+        "#TL": "timeline"
       },
       ExpressionAttributeValues: {
         ":updated": new Date().toISOString(),
         ":r": new Date().toISOString(),
         ":t": _trans,
-        ":s": "COMPLETE"
+        ":s": "COMPLETE",
+        ":tl": [ { status: "RECEIVED", time: new Date().toISOString() } ],
+        ":empty": []
       }
     };
     const payment = await getPaymentById(id);
