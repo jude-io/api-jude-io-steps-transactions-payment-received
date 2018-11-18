@@ -22,7 +22,7 @@ export async function markTransferAsReceived(id, _trans, _user) {
         ":r": new Date().toISOString(),
         ":t": [ { _trans, _user } ],
         ":s": "COMPLETE",
-        ":tl": [ { status: "RECEIVED", time: new Date().toISOString() } ],
+        ":tl": [ { status: "TRANSACTION_RECEIVED", time: new Date().toISOString() } ],
         ":empty": []
       }
     };
