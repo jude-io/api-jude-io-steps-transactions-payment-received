@@ -29,7 +29,7 @@
     "build:js": "cd src && babel . -d ../dist",
     "build:install": "cp package.json package-lock.json dist/ && cd dist && npm install --production",
     "package": "npm run build && npm run package:pack",
-    "package:pack": "rm -f artifact.zip && cd dist/ && zip -r ../artifact.zip * -x package.json package-lock.json && cd ..",
+    "package:pack": "rm -f artifact.zip && cd dist/ && zip -rq ../artifact.zip * -x package.json package-lock.json && cd ..",
     "spec": "npm run spec:snapshot && npm run spec:functional",
     "spec:snapshot": "jest spec/snapshot",
     "spec:functional": "jest spec/functional",
