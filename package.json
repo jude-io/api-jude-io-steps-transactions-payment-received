@@ -16,13 +16,12 @@
     "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
     "babel-plugin-transform-es2017-object-entries": "0.0.4",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-preset-env": "^1.7.0"
-  },
-  "dependencies": {
+    "babel-preset-env": "^1.7.0",
     "moment": "^2.22.2",
     "numeral": "^2.0.6",
     "utils-common": "git+ssh://git@github.com/jude-io/utils-common.git#master"
   },
+  "dependencies": {},
   "scripts": {
     "build": "npm run build:init && npm run build:js && npm run build:install",
     "build:init": "rm -rf dist && mkdir dist",
