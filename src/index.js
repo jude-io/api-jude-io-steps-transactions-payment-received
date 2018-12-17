@@ -1,11 +1,7 @@
-import { Log, init, decrypt, notifySlack, sendPushNotification, sentrify } from "utils-common";
+import { Log, init, decrypt, notifySlack, sendPushNotification, sentrify, JudeUsers } from "utils-common";
 import { markPaymentAsReceived } from "./api/payments/update";
 import { markTransferAsReceived } from "./api/transfers/update";
-import { getTriggerById } from "./api/triggers/get";
 import { setTriggerStatus } from "./api/triggers/update";
-import { getUserById } from "./api/users/get";
-import { getDeviceById } from "./api/devices/get";
-import { getAccount } from "./api/accounts/get";
 import moment from "moment";
 import numeral from "numeral";
 
@@ -70,7 +66,7 @@ exports.handler = sentrify(async (event, context, callback) => {
 
       // If this is part of a trigger, and the trigger is awaiting a payment confirmation, set it back to active
       if (trans._trigger) {
-        const trigger = await getTriggerById(trans._user, trans._trigger);
+        const trigger = await JudeUsers.get(trans._user, trans._trigger);
         if (trigger.status === "AWAITING_PAYMENT") {
           await setTriggerStatus(trans._user, trans._trigger, "ACTIVE");
           Log("handler", "reset trigger");
@@ -79,17 +75,17 @@ exports.handler = sentrify(async (event, context, callback) => {
 
       // Send a notification
       if (trans.notify && result.payee) {
-        const user = await getUserById(result.payee);
-        const device = await getDeviceById(user._device);
+        const user = await JudeUsers.getUser(result.payee);
+        const device = await JudeUsers.get(user._id, user._device);
         if (device.push_token) {
           let message;
           if (trans._jude.startsWith("payment_")) {
-            const payer = getUserById(result.payer);
-            const to = getAccount(user._id, result.to);
+            const payer = JudeUsers.getUser(result.payer);
+            const to = JudeUsers.get(user._id, result.to);
             message = `Payment of ${numeral(trans.amount).format("$0,000.00")} from ${payer.first_name} has arrived ` +
               `in your ${to.name} account`;
           } else {
-            const to = getAccount(user._id, result.to);
+            const to = JudeUsers.getAccount(user._id, result.to);
             message = `Transfer of ${numeral(trans.amount).format("$0,000.00")} has arrived in your ` +
               `${to.name} account`;
           }

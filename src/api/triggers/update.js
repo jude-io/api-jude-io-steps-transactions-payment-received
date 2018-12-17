@@ -1,25 +1,12 @@
-import { Log, DDB } from "utils-common";
+import { Log, JudeUsers } from "utils-common";
 
 export async function setTriggerStatus(user, id, status) {
   Log("fn.setTriggerStatus", user, id, status);
-  const params = {
-    TableName: "prod-triggers",
-    Key: {
-      _id: id,
-      _user: user
-    },
-    UpdateExpression: "SET #U = :u, #S = :s",
-    ExpressionAttributeNames: {
-      "#U": "updated_at",
-      "#S": "status"
-    },
-    ExpressionAttributeValues: {
-      ":u": new Date().toISOString(),
-      ":s": status
-    }
-  };
   try {
-    const result = await DDB.update(params).promise();
+    const result = await JudeUsers.update(user, id, {
+      updated_at: new Date().toISOString(),
+      status
+    });
     Log("fn.setTriggerStatus.success");
     return true;
   } catch (error) {
