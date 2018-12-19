@@ -3,7 +3,7 @@ import { Log, JudeUsers } from "utils-common";
 export async function markPaymentAsReceived(id, _trans, _user) {
   Log("fn.markAsReceived", id);
   try {
-    const payment = await JudeUsers.getPaymentById(id);
+    const payment = await JudeUsers.getPaymentById(_user, id);
     const params = {
       update: "SET #R = :r, #UPDATED = :updated, #S = :s, #S3 = :s3, " +
       "#T = list_append(if_not_exists(#T, :empty), :t), #TL = list_append(if_not_exists(#TL, :empty), :tl)",

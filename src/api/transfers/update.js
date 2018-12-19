@@ -3,7 +3,7 @@ import { Log, JudeUsers } from "utils-common";
 export async function markTransferAsReceived(id, _trans, _user) {
   Log("fn.markAsReceived", id);
   try {
-    const transfer = await JudeUsers.getTransferById(id);
+    const transfer = await JudeUsers.get(_user, id);
     const params = {
       update: "SET #R = :r, #UPDATED = :updated, #S = :s, S2 = :s2, " +
       "#T = list_append(if_not_exists(#T, :empty), :t), #TL = list_append(if_not_exists(#TL, :empty), :tl)",
