@@ -5,28 +5,13 @@ export async function markTransferAsReceived(id, _trans, _user) {
   try {
     const transfer = await JudeUsers.get(_user, id);
     const params = {
-      update: "SET #R = :r, #UPDATED = :updated, #S = :s, #S2 = :s2, " +
-      "#T = list_append(if_not_exists(#T, :empty), :t), #TL = list_append(if_not_exists(#TL, :empty), :tl)",
-      names: {
-        "#R": "received_at",
-        "#S": "status",
-        "#T": "transactions",
-        "#UPDATED": "updated_at",
-        "#TL": "timeline",
-        "#S2": "sort_2"
-      },
-      values: {
-        ":updated": new Date().toISOString(),
-        ":r": new Date().toISOString(),
-        ":t": [ { _trans, _user } ],
-        ":s": "COMPLETE",
-        ":tl": [ { status: "TRANSACTION_RECEIVED", time: new Date().toISOString() } ],
-        ":empty": [],
-        ":s2": `COMPLETE_${transfer._to}`
-      }
+      received_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      status: "COMPLETE",
+      transactions: [...(transfer.transactions || []), { _trans, _user } ]
     };
     if (transfer && !transfer.received_at) {
-      const result = await JudeUsers.raw.updateRaw(transfer._user, id, params);
+      const result = await JudeUsers.update(transfer._user, id, params);
       Log("fn.markAsReceived.success", id);
       return {
         alreadyMarked: false,

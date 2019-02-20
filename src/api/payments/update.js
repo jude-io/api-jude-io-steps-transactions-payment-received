@@ -1,32 +1,21 @@
 import { Log, JudeUsers } from "utils-common";
+import { markRequestAsReceived } from "../requests/update";
 
 export async function markPaymentAsReceived(id, _trans, _user) {
   Log("fn.markAsReceived", id);
   try {
     const payment = await JudeUsers.getPaymentById(_user, id);
     const params = {
-      update: "SET #R = :r, #UPDATED = :updated, #S = :s, #S3 = :s3, " +
-      "#T = list_append(if_not_exists(#T, :empty), :t), #TL = list_append(if_not_exists(#TL, :empty), :tl)",
-      names: {
-        "#R": "received_at",
-        "#S": "status",
-        "#T": "transactions",
-        "#UPDATED": "updated_at",
-        "#TL": "timeline",
-        "#S3": "sort_3"
-      },
-      values: {
-        ":updated": new Date().toISOString(),
-        ":r": new Date().toISOString(),
-        ":t": [ { _trans, _user } ],
-        ":s": "COMPLETE",
-        ":tl": [ { status: "TRANSACTION_RECEIVED", time: new Date().toISOString() } ],
-        ":empty": [],
-        ":s3": `COMPLETE_${payment._to}`
-      }
+      received_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      status: "COMPLETE",
+      transactions: [...(payment.transactions || []), { _trans, _user } ]
     };
     if (payment && !payment.received_at) {
-      const result = await JudeUsers.raw.updateRaw(payment._user, id, params);
+      const result = await JudeUsers.update(payment._user, id, params);
+      if (payment._request) {
+        await markRequestAsReceived(payment._request, _trans, payment._payee, _user);
+      }
       Log("fn.markAsReceived.success", id);
       return {
         alreadyMarked: false,
