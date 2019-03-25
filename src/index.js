@@ -1,4 +1,4 @@
-import { Log, init, decrypt, notifySlack, sendPushNotification, sentrify, JudeUsers } from "utils-common";
+import { Log, init, decrypt, notifySlack, sendPushNotification, sentrify, JudeUsers, getFromS3 } from "utils-common";
 import { markPaymentAsReceived } from "./api/payments/update";
 import { markTransferAsReceived } from "./api/transfers/update";
 import { setTriggerStatus } from "./api/triggers/update";
@@ -9,7 +9,9 @@ exports.handler = sentrify(async (event, context, callback) => {
   console.log("E", JSON.stringify(event));
   try {
     await init(event, context);
-    const items = event.payload.filter(item => {
+    const data = await getFromS3("jude-io-transactions", event.key);
+    Log("handler.init.info", data);
+    const items = data.items.filter(item => {
       return item._jude && item.tmp.newlyReceived;
     });
     for (let trans of items) {
