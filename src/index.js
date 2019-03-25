@@ -9,7 +9,7 @@ exports.handler = sentrify(async (event, context, callback) => {
   console.log("E", JSON.stringify(event));
   try {
     await init(event, context);
-    const data = await getFromS3("jude-io-transactions", event.key);
+    const data = JSON.parse((await getFromS3("jude-io-transactions", event.key)).Body.toString());
     Log("handler.init.info", data);
     const items = data.items.filter(item => {
       return item._jude && item.tmp.newlyReceived;
