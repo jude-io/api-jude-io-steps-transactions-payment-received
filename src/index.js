@@ -22,7 +22,7 @@ exports.handler = sentrify(async (event, context, callback) => {
         result = await markTransferAsReceived(trans._jude, trans._id, trans._user);
       } else if (trans._jude.startsWith("payment_")) {
         Log("handler", "transaction is a jude payment");
-        result = await markPaymentAsReceived(trans._jude, trans._id, trans._user);
+        result = await markPaymentAsReceived(trans.tmp.jude, trans._id, trans._user);
       } else {
         Log("handler.warning", "unknown transaction._jude type", trans._jude);
       }
