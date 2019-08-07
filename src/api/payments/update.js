@@ -4,7 +4,8 @@ import { markRequestAsReceived } from "../requests/update";
 export async function markPaymentAsReceived(sid, _trans, _user) {
   Log("fn.markAsReceived", sid);
   try {
-    const payment = await JudeUsers.getPaymentBySid(sid);
+    let payment = await JudeUsers.getPaymentBySid(sid);
+    payment = await JudeUsers.raw.getByKey(payment.key, payment._id);
     const params = {
       received_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
