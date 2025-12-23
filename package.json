@@ -13,7 +13,7 @@
     "@babel/preset-env": "^7.10.4",
     "babel-eslint": "10.0.3",
     "aws-sdk": "^2.247.1",
-    "eslint": "^6.6.0",
+    "eslint": "^9.39.1",
     "moment": "^2.22.2",
     "utils-common": "git+ssh://git@github.com/jude-io/utils-common.git#master"
   },
